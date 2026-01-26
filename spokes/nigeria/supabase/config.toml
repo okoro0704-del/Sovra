@@ -1,0 +1,49 @@
+# Supabase CLI Configuration
+# This file is used by the Supabase CLI to manage your local and remote Supabase projects
+
+[project]
+# Your Supabase project reference ID (found in your project settings)
+# Leave empty if not linked yet
+project_id = ""
+
+[auth]
+# Enable email authentication
+enable_signup = true
+# Site URL for authentication redirects
+site_url = "http://localhost:3000"
+
+[api]
+# API port
+port = 54321
+# Schema to expose via PostgREST
+schemas = ["public", "storage"]
+# Extra schemas to expose
+extra_search_path = ["public", "extensions"]
+# Maximum number of rows returned from a view, table, or stored procedure
+max_rows = 1000
+
+[db]
+# Database port
+port = 54322
+# Database major version
+major_version = 15
+
+[studio]
+# Studio port
+port = 54323
+# Enable Studio
+enabled = true
+
+[inbucket]
+# Inbucket port (for local email testing)
+port = 54324
+# Enable Inbucket
+enabled = true
+
+[storage]
+# Storage file size limit (in bytes)
+file_size_limit = 52428800
+
+[functions]
+# Functions port
+port = 54325

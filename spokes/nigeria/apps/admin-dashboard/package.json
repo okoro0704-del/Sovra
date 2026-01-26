@@ -1,0 +1,29 @@
+{
+  "name": "@sovrn/admin-dashboard",
+  "version": "1.0.0",
+  "description": "SOVRN Protocol Admin Dashboard - Next.js web portal for oversight",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": ["sovrn", "admin", "dashboard", "nextjs", "protocol"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sovrn/shared": "file:../../../../global-hub/packages/shared",
+    "next": "14.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@supabase/supabase-js": "^2.38.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.3.3",
+    "eslint": "^8.54.0",
+    "eslint-config-next": "14.0.3"
+  }
+}

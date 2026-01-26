@@ -1,0 +1,159 @@
+syntax = "proto3";
+
+package sovrn.hub.fasttrack.v1;
+
+option go_package = "github.com/sovrn-protocol/sovrn/hub/api/fasttrack/v1;fasttrack";
+
+// FastTrackService provides high-performance traveler verification
+// with ZK-proof privacy, temporal trust caching, and revenue events
+service FastTrackService {
+  // VerifyTraveler performs privacy-preserving biometric verification
+  // Returns trust score and cached status for sub-second repeat verifications
+  rpc VerifyTraveler(VerifyTravelerRequest) returns (VerifyTravelerResponse);
+  
+  // GetTrustStatus checks if a traveler has valid cached trust
+  rpc GetTrustStatus(TrustStatusRequest) returns (TrustStatusResponse);
+  
+  // InvalidateTrust manually invalidates cached trust (security concerns)
+  rpc InvalidateTrust(InvalidateTrustRequest) returns (InvalidateTrustResponse);
+}
+
+// VerifyTravelerRequest contains biometric hash and carrier information
+message VerifyTravelerRequest {
+  // biometric_hash is the hashed biometric data (PFF hash)
+  // This is the ONLY identifier sent - no name, passport, or PII
+  string biometric_hash = 1;
+  
+  // carrier_id identifies the airline/airport requesting verification
+  // Format: "airline:AA" or "airport:LOS"
+  string carrier_id = 2;
+  
+  // checkpoint_type describes the verification point
+  // Examples: "check_in", "security", "boarding_gate", "customs"
+  string checkpoint_type = 3;
+  
+  // flight_number is optional flight context
+  string flight_number = 4;
+  
+  // request_id is a unique identifier for this verification request
+  string request_id = 5;
+}
+
+// VerifyTravelerResponse contains verification result and trust information
+message VerifyTravelerResponse {
+  // success indicates if verification was successful
+  bool success = 1;
+  
+  // trust_score is a 0-100 score indicating traveler trustworthiness
+  int32 trust_score = 2;
+  
+  // trust_level is a human-readable trust classification
+  // Values: "very_high", "high", "medium", "low", "very_low"
+  string trust_level = 3;
+  
+  // cached indicates if this result came from temporal trust cache
+  bool cached = 4;
+  
+  // cache_expires_at is when the cached trust expires (RFC3339)
+  string cache_expires_at = 5;
+  
+  // verification_id is a unique identifier for this verification
+  string verification_id = 6;
+  
+  // response_time_ms is the time taken to process this request
+  int64 response_time_ms = 7;
+  
+  // zkp_proof_valid indicates if the ZK-proof handshake succeeded
+  bool zkp_proof_valid = 8;
+  
+  // billing_event_id is the ID of the revenue event created
+  string billing_event_id = 9;
+  
+  // message provides additional context or error information
+  string message = 10;
+}
+
+// TrustStatusRequest checks cached trust status
+message TrustStatusRequest {
+  string biometric_hash = 1;
+  string carrier_id = 2;
+}
+
+// TrustStatusResponse returns cached trust information
+message TrustStatusResponse {
+  bool has_valid_trust = 1;
+  int32 trust_score = 2;
+  string trust_level = 3;
+  string cache_expires_at = 4;
+  int32 verification_count = 5;
+  string last_verified_at = 6;
+}
+
+// InvalidateTrustRequest manually invalidates cached trust
+message InvalidateTrustRequest {
+  string biometric_hash = 1;
+  string reason = 2;
+}
+
+// InvalidateTrustResponse confirms trust invalidation
+message InvalidateTrustResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// ZKProofRequest is sent to National Spoke for privacy-preserving verification
+message ZKProofRequest {
+  // challenge is a cryptographic challenge for the ZK-proof
+  string challenge = 1;
+  
+  // biometric_hash is the hash to verify (without revealing identity)
+  string biometric_hash = 2;
+  
+  // spoke_id identifies the National Spoke to query
+  string spoke_id = 3;
+  
+  // timestamp is when this request was created
+  int64 timestamp = 4;
+}
+
+// ZKProofResponse is returned by National Spoke
+message ZKProofResponse {
+  // exists indicates if the hash exists in the spoke's registry
+  // This is the ONLY information revealed - no name, passport, or PII
+  bool exists = 1;
+  
+  // proof is the cryptographic proof of existence
+  string proof = 2;
+  
+  // trust_indicators are privacy-preserving trust signals
+  // Example: {"verification_count": "high", "last_verified": "recent"}
+  map<string, string> trust_indicators = 3;
+  
+  // response_time_ms is the spoke's response time
+  int64 response_time_ms = 4;
+}
+
+// BillingEvent represents a revenue event for carrier charging
+message BillingEvent {
+  // event_id is a unique identifier for this billing event
+  string event_id = 1;
+  
+  // carrier_id is the airline/airport being charged
+  string carrier_id = 2;
+  
+  // amount is the charge amount (1 SOV = 1,000,000 uSOV)
+  int64 amount_usov = 3;
+  
+  // verification_id links to the verification that triggered this charge
+  string verification_id = 4;
+  
+  // checkpoint_type describes where the verification occurred
+  string checkpoint_type = 5;
+  
+  // timestamp is when this event was created
+  int64 timestamp = 6;
+  
+  // status is the billing status: "pending", "charged", "failed"
+  string status = 7;
+}
+

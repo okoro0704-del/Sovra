@@ -1,0 +1,33 @@
+{
+  "name": "sovrn-protocol-monorepo",
+  "version": "1.0.0",
+  "description": "SOVRN Protocol - Hub and Spoke Architecture",
+  "private": true,
+  "workspaces": [
+    "global-hub/packages/*",
+    "spokes/*/apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "build:hub": "cd global-hub && npm run build",
+    "build:nigeria": "cd spokes/nigeria && npm run build",
+    "dev:nigeria:api": "cd spokes/nigeria && npm run dev:api",
+    "dev:nigeria:dashboard": "cd spokes/nigeria && npm run dev:dashboard",
+    "dev:nigeria:gateway": "cd spokes/nigeria && npm run dev:gateway",
+    "install:all": "npm install && cd global-hub && npm install && cd ../spokes/nigeria && npm install"
+  },
+  "keywords": [
+    "sovrn",
+    "protocol",
+    "identity",
+    "consent",
+    "pff",
+    "hub-spoke",
+    "decentralized"
+  ],
+  "author": "SOVRN Protocol Contributors",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

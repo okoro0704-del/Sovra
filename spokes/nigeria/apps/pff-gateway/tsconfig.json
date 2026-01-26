@@ -1,0 +1,9 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@sovrn/shared": ["../../../../global-hub/packages/shared/src"]
+    }
+  }
+}

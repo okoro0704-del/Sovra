@@ -1,0 +1,27 @@
+{
+  "name": "@sovrn/global-hub",
+  "version": "1.0.0",
+  "description": "SOVRN Protocol - Global Hub (Universal Protocol Layer)",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces"
+  },
+  "keywords": [
+    "sovrn",
+    "protocol",
+    "identity",
+    "consent",
+    "pff",
+    "global-hub"
+  ],
+  "author": "SOVRN Protocol Contributors",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
+
