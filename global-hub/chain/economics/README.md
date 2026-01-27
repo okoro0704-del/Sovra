@@ -14,6 +14,8 @@ The **Economics Module** implements the Quadratic-Sovereign-Split, the SOVRA Pro
 global-hub/chain/economics/
 ├── kernel.go              # Quadratic-Sovereign-Split implementation
 ├── multisig_vault.go      # Time-locked multisig vault for R&D funds
+├── transactions.go        # Proxy Payment Protocol for third-party payments
+├── schema.sql             # Database schema for proxy payments
 └── README.md              # This file
 ```
 
@@ -234,6 +236,56 @@ vault.SignProposal(ctx, proposalID, "did:sovra:ng:founder3")
 // Execute proposal
 err := vault.ExecuteProposal(ctx, proposalID, "did:sovra:ng:founder1")
 ```
+
+---
+
+### ProxyPaymentProtocol
+
+**File**: `transactions.go`
+
+**Purpose**: Enables third-party fee payments for travelers with insufficient funds
+
+**Key Methods**:
+```go
+// Check balance before transaction
+func (ppp *ProxyPaymentProtocol) CheckBalanceBeforeTransaction(
+    ctx context.Context,
+    userDID string,
+    requiredFee int64,
+) (*BalanceCheckResult, error)
+
+// Execute proxy payment
+func (ppp *ProxyPaymentProtocol) ExecuteProxyPayment(
+    ctx sdk.Context,
+    travelerDID string,
+    proxyDID string,
+    fee int64,
+    pffHash string,
+) (*ProxyPaymentResult, error)
+
+// Record Vitalian passage
+func (ppp *ProxyPaymentProtocol) RecordVitalianPassage(
+    ctx sdk.Context,
+    travelerDID string,
+    proxyDID string,
+    txID string,
+    pffHash string,
+) (string, error)
+```
+
+**Flow**:
+1. Check traveler balance
+2. If insufficient, trigger proxy payment
+3. Debit airport/airline wallet
+4. Credit traveler's verification record
+5. Execute Four Pillars split
+6. Mark traveler as `Verified_Passage_Success`
+
+**Use Cases**:
+- Airport checkpoints
+- Airline boarding gates
+- Border control
+- Immigration services
 
 ---
 
