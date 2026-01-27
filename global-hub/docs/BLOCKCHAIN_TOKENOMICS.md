@@ -1,26 +1,29 @@
 # SOVRA Hub - Blockchain Tokenomics
 ## Unified Presence & Sovereignty Protocol
 
+**TECHNOLOGY_TYPE**: VITALIZED_LEDGER_TECHNOLOGY
+
 ## Overview
 
-The **SOVRA Hub** is a Cosmos SDK blockchain that implements the core tokenomics for the **SOVRA Protocol** (Sovereign Presence Architecture). It features **usage-based minting**, a **burn engine** for fee distribution, and a **hardcoded oracle peg** for verification pricing.
+The **SOVRA Hub** is a Cosmos SDK blockchain that implements the core tokenomics for the **SOVRA Protocol** (Sovereign Presence Architecture). It features **usage-based minting**, a **dynamic burn engine** with supply equilibrium control, and a **hardcoded oracle peg** for verification pricing.
 
 ## Architecture
 
 ```
 SOVRA Hub Blockchain (Cosmos SDK)
-├── x/mint          # Usage-based minting module
-├── x/auth          # Fee handling with burn engine
+├── x/mint          # Usage-based minting module with supply equilibrium
+├── x/auth          # Fee handling with dynamic burn engine
 ├── x/pff           # PFF verification module
-└── x/oracle        # Price oracle module
+├── x/oracle        # Price oracle module
+└── x/vltcore       # VLT security module
 ```
 
 ## Core Tokenomics
 
-### 1. Usage-Based Minting
+### 1. Usage-Based Minting with Supply Equilibrium
 
 **Traditional Blockchain**: Fixed inflation (e.g., 7% annual inflation)
-**SOVRA Hub**: Usage-based minting (tokens minted per verification event)
+**SOVRA Hub**: Usage-based minting (tokens minted per verification event) with hardcoded supply cap
 
 #### Implementation
 
@@ -32,6 +35,16 @@ SOVRA Hub Blockchain (Cosmos SDK)
 - **Amount**: 10 uSOV (0.00001 SOV)
 - **Recipient**: Citizen who completed the verification
 - **Fixed Inflation**: DISABLED
+- **Supply Cap**: MAX_TOTAL_SUPPLY = 1 billion SOV (hardcoded, immutable)
+
+**Supply Equilibrium Check**:
+```go
+// Check if minting would exceed MAX_TOTAL_SUPPLY
+currentSupply := k.bankKeeper.GetSupply(ctx, "usov").Amount
+if err := k.equilibriumController.CanMint(currentSupply, mintAmount); err != nil {
+    return err // Minting rejected - MAX_TOTAL_SUPPLY reached
+}
+```
 
 **Parameters** (`x/mint/types/params.go`):
 ```go
@@ -46,26 +59,49 @@ type Params struct {
 Citizen completes PFF verification
 → MsgPFFVerification processed
 → MintOnVerification() called
-→ 10 uSOV minted to citizen's account
+→ Supply cap check (CanMint)
+→ 10 uSOV minted to citizen's account (if cap not exceeded)
 → Event emitted: mint_on_verification
 ```
 
-### 2. The Burn Engine
+### 2. The Dynamic Burn Engine with Supply Equilibrium
 
-**Purpose**: Distribute verification fees to create deflationary pressure and fund protocol operations
+**Purpose**: Distribute verification fees with dynamic burn rates to maintain supply equilibrium
 
 **Module**: `x/auth/ante`
 **Handler**: `BurnEngineDecorator` (post-handler)
+
+#### Dynamic Burn Rate
+
+**Supply Equilibrium Control**:
+- **Base Burn Rate**: 1% (when circulating supply < 500M SOV)
+- **Elevated Burn Rate**: 1.5% (when circulating supply >= 500M SOV)
+- **Automatic Adjustment**: No human intervention required
+
+**Black Hole Address**: `sovra1deaddeaddeaddeaddeaddeaddeaddeaddeaddead`
+- Verifiable dead wallet with no known private key
+- Publicly queryable balance
+- Visible on SOVRA Explorer
 
 #### Fee Distribution
 
 For every verification fee collected (5 SOV = 5,000,000 uSOV):
 
+**Scenario 1: Supply < 500M SOV (Base Rate)**
+
 | Allocation | Percentage | Amount (uSOV) | Destination |
 |------------|------------|---------------|-------------|
-| **Burn** | 25% | 1,250,000 | Null address (removed from supply) |
-| **National Spoke Pool** | 50% | 2,500,000 | DID-based routing |
-| **Global Protocol Treasury** | 25% | 1,250,000 | Protocol operations |
+| **Burn** | 1% | 50,000 | Black hole address |
+| **National Spoke Pool** | 49.5% | 2,475,000 | DID-based routing |
+| **Global Protocol Treasury** | 49.5% | 2,475,000 | Protocol operations |
+
+**Scenario 2: Supply >= 500M SOV (Elevated Rate)**
+
+| Allocation | Percentage | Amount (uSOV) | Destination |
+|------------|------------|---------------|-------------|
+| **Burn** | 1.5% | 75,000 | Black hole address |
+| **National Spoke Pool** | 49.25% | 2,462,500 | DID-based routing |
+| **Global Protocol Treasury** | 49.25% | 2,462,500 | Protocol operations |
 
 #### Implementation
 
@@ -74,32 +110,39 @@ For every verification fee collected (5 SOV = 5,000,000 uSOV):
 1. Transaction completes successfully
 2. Check if MsgPFFVerification
 3. Extract fees from transaction
-4. Calculate distribution:
-   - burnAmount = fees × 25%
-   - spokeAmount = fees × 50%
-   - treasuryAmount = fees × 25%
-5. Execute distribution:
-   - Burn 25% (BurnCoins)
-   - Send 50% to National_Spoke_Pool (DID-based)
-   - Send 25% to Global_Protocol_Treasury
-6. Emit fee_distribution event
+4. Get dynamic burn rate (1% or 1.5%)
+5. Calculate distribution:
+   - burnAmount = fees × burnRate (dynamic)
+   - remaining = fees - burnAmount
+   - spokeAmount = remaining × 50%
+   - treasuryAmount = remaining × 50%
+6. Execute distribution:
+   - Send burn amount to black hole address
+   - Send 50% of remaining to National_Spoke_Pool (DID-based)
+   - Send 50% of remaining to Global_Protocol_Treasury
+7. Emit fee_distribution event
 ```
 
 **Code** (`x/auth/ante/fee_handler.go`):
 ```go
 func (bed BurnEngineDecorator) distributeFees(ctx sdk.Context, fees sdk.Coins, requesterDID string) error {
-    // Calculate 25% burn
-    burnAmount := totalAmount.MulRaw(25).QuoRaw(100)
-    bed.bankKeeper.BurnCoins(ctx, types.FeeCollectorName, burnCoins)
-    
-    // Calculate 50% to National_Spoke_Pool
-    spokeAmount := totalAmount.MulRaw(50).QuoRaw(100)
-    spokePoolName := getSpokePoolFromDID(requesterDID)
-    bed.bankKeeper.SendCoinsFromModuleToModule(ctx, types.FeeCollectorName, spokePoolName, spokeCoins)
-    
-    // Calculate 25% to Global_Protocol_Treasury
-    treasuryAmount := totalAmount.MulRaw(25).QuoRaw(100)
-    bed.bankKeeper.SendCoinsFromModuleToModule(ctx, types.FeeCollectorName, "global_protocol_treasury", treasuryCoins)
+    // Get dynamic burn rate (1% or 1.5%)
+    burnRate := bed.mintKeeper.GetCurrentBurnRate(ctx)
+
+    // Calculate dynamic burn amount
+    burnAmount := totalAmount.ToDec().Mul(burnRate).TruncateInt()
+
+    // Send to black hole address (publicly verifiable)
+    blackHoleAddr, _ := sdk.AccAddressFromBech32(minttypes.BLACK_HOLE_ADDRESS)
+    bed.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.FeeCollectorName, blackHoleAddr, burnCoins)
+
+    // Distribute remaining to spoke pool and treasury
+    remainingAmount := totalAmount.Sub(burnAmount)
+    spokeAmount := remainingAmount.MulRaw(50).QuoRaw(100)
+    treasuryAmount := remainingAmount.Sub(spokeAmount)
+
+    // Send to spoke pool and treasury
+    // ...
 }
 ```
 
