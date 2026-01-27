@@ -1,39 +1,40 @@
 // TECHNOLOGY_TYPE: VITALIZED_LEDGER_TECHNOLOGY
-// SOVRA_Sovereign_Kernel - Dynamic Burn Engine
+// SOVRA_Sovereign_Kernel - Quadratic-Sovereign-Split Fee Handler
 //
-// Implements autonomous fee distribution with dynamic burn rates based on supply equilibrium.
-// Burn rate automatically adjusts from 1% to 1.5% when circulating supply exceeds threshold.
+// Implements the Four Pillars economic model for fee distribution.
+// Every kobo of transaction fees is split equally across four destinations:
+// - 25% CITIZEN_DIVIDEND (distributed to all verified DIDs)
+// - 25% PROJECT_R_AND_D (locked in time-locked multisig vault)
+// - 25% NATION_INFRASTRUCTURE (for national operations)
+// - 25% DEFLATION_BURN (sent to black hole address)
 
 package ante
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 
+	"github.com/sovrn-protocol/sovrn/chain/economics"
 	pfftypes "github.com/sovrn-protocol/sovrn/x/pff/types"
-	minttypes "github.com/sovrn-protocol/sovrn/x/mint/types"
 )
 
-// BurnEngineDecorator implements the burn engine for verification fees
-// SUPPLY EQUILIBRIUM: Dynamic burn rate (1% or 1.5%) based on circulating supply
-// For every verification fee collected:
-// - Burn 1% or 1.5% (dynamic) by sending to black hole address
-// - Allocate remaining to National_Spoke_Pool and Global_Protocol_Treasury
+// BurnEngineDecorator implements the Quadratic-Sovereign-Split for verification fees
+// FOUR PILLARS MODEL: Equal 25% distribution across all four destinations
+// GHOST-PROOF: R&D funds routed to time-locked multisig vault
+// TRANSPARENT: All distributions visible via Transparency Oracle
 type BurnEngineDecorator struct {
 	bankKeeper    BankKeeper
 	accountKeeper AccountKeeper
-	mintKeeper    MintKeeper
+	economicsKernel *economics.QuadraticSovereignSplit
 }
 
-// NewBurnEngineDecorator creates a new BurnEngineDecorator
-func NewBurnEngineDecorator(ak AccountKeeper, bk BankKeeper, mk MintKeeper) BurnEngineDecorator {
+// NewBurnEngineDecorator creates a new BurnEngineDecorator with Quadratic-Sovereign-Split
+func NewBurnEngineDecorator(ak AccountKeeper, bk BankKeeper) BurnEngineDecorator {
 	return BurnEngineDecorator{
 		accountKeeper: ak,
 		bankKeeper:    bk,
-		mintKeeper:    mk,
+		economicsKernel: economics.NewQuadraticSovereignSplit(bk),
 	}
 }
 
@@ -89,98 +90,29 @@ func (bed BurnEngineDecorator) PostHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 	return next(ctx, tx, simulate, success)
 }
 
-// distributeFees implements the burn engine logic with DYNAMIC BURN RATE
-// SUPPLY EQUILIBRIUM: Burn rate automatically adjusts from 1% to 1.5% based on supply
+// distributeFees implements the Quadratic-Sovereign-Split logic
+// FOUR PILLARS: Equal 25% distribution across all four destinations
 func (bed BurnEngineDecorator) distributeFees(ctx sdk.Context, fees sdk.Coins, requesterDID string) error {
-	// Get current dynamic burn rate from Supply Equilibrium Controller
-	// Returns 1% if supply < threshold, 1.5% if supply >= threshold
-	burnRate := bed.mintKeeper.GetCurrentBurnRate(ctx)
-
-	for _, fee := range fees {
-		totalAmount := fee.Amount
-
-		// Calculate dynamic burn amount (1% or 1.5%)
-		burnAmount := totalAmount.ToDec().Mul(burnRate).TruncateInt()
-		burnCoins := sdk.NewCoins(sdk.NewCoin(fee.Denom, burnAmount))
-
-		// Remaining amount after burn
-		remainingAmount := totalAmount.Sub(burnAmount)
-
-		// Calculate 50% of remaining for National_Spoke_Pool
-		spokeAmount := remainingAmount.MulRaw(50).QuoRaw(100)
-		spokeCoins := sdk.NewCoins(sdk.NewCoin(fee.Denom, spokeAmount))
-
-		// Calculate 50% of remaining for Global_Protocol_Treasury
-		treasuryAmount := remainingAmount.Sub(spokeAmount)
-		treasuryCoins := sdk.NewCoins(sdk.NewCoin(fee.Denom, treasuryAmount))
-
-		// 1. Send burn amount to BLACK HOLE ADDRESS (verifiable dead wallet)
-		blackHoleAddr, err := sdk.AccAddressFromBech32(minttypes.BLACK_HOLE_ADDRESS)
-		if err != nil {
-			return fmt.Errorf("failed to parse black hole address: %w", err)
-		}
-
-		if err := bed.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.FeeCollectorName, blackHoleAddr, burnCoins); err != nil {
-			return fmt.Errorf("failed to send coins to black hole: %w", err)
-		}
-
-		// 2. Send to National_Spoke_Pool (DID-based routing)
-		spokePoolName, err := bed.getSpokePoolFromDID(requesterDID)
-		if err != nil {
-			return fmt.Errorf("failed to get spoke pool from DID: %w", err)
-		}
-
-		if err := bed.bankKeeper.SendCoinsFromModuleToModule(ctx, types.FeeCollectorName, spokePoolName, spokeCoins); err != nil {
-			return fmt.Errorf("failed to send coins to spoke pool: %w", err)
-		}
-
-		// 3. Send to Global_Protocol_Treasury
-		if err := bed.bankKeeper.SendCoinsFromModuleToModule(ctx, types.FeeCollectorName, "global_protocol_treasury", treasuryCoins); err != nil {
-			return fmt.Errorf("failed to send coins to treasury: %w", err)
-		}
-
-		// Emit event for fee distribution
-		ctx.EventManager().EmitEvent(
-			sdk.NewEvent(
-				"fee_distribution",
-				sdk.NewAttribute("total_amount", totalAmount.String()),
-				sdk.NewAttribute("burn_rate", burnRate.String()),
-				sdk.NewAttribute("burned", burnAmount.String()),
-				sdk.NewAttribute("black_hole_address", minttypes.BLACK_HOLE_ADDRESS),
-				sdk.NewAttribute("spoke_pool", spokeAmount.String()),
-				sdk.NewAttribute("spoke_pool_name", spokePoolName),
-				sdk.NewAttribute("treasury", treasuryAmount.String()),
-			),
-		)
-	}
-
-	return nil
-}
-
-// getSpokePoolFromDID extracts the country from DID and returns the spoke pool module name
-func (bed BurnEngineDecorator) getSpokePoolFromDID(did string) (string, error) {
-	country, err := pfftypes.ParseDIDCountry(did)
-	if err != nil {
-		return "", err
-	}
-	
-	return pfftypes.GetSpokePoolAddress(country), nil
+	// Execute Four-Way Split using economics kernel
+	// This distributes fees across:
+	// - 25% Citizen Dividend Pool
+	// - 25% Project R&D Vault (time-locked multisig)
+	// - 25% Nation Infrastructure Pool
+	// - 25% Deflation Burn (black hole address)
+	return bed.economicsKernel.ExecuteFourWaySplit(ctx, fees, types.FeeCollectorName)
 }
 
 // BankKeeper defines the expected bank keeper interface
 type BankKeeper interface {
 	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins) error
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
-	BurnCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
+	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
+	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
+	GetModuleAddress(moduleName string) sdk.AccAddress
 }
 
 // AccountKeeper defines the expected account keeper interface
 type AccountKeeper interface {
 	GetModuleAddress(moduleName string) sdk.AccAddress
-}
-
-// MintKeeper defines the expected mint keeper interface
-type MintKeeper interface {
-	GetCurrentBurnRate(ctx sdk.Context) sdk.Dec
 }
 
