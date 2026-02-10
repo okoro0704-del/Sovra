@@ -1,5 +1,4 @@
 [build]
-  # Admin dashboard (static export) — main site so / and assets load
   base = "spokes/nigeria/apps/admin-dashboard"
   command = "npm run build"
-  publish = "out"
+  publish = ".next"
