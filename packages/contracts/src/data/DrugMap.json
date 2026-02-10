@@ -1,0 +1,293 @@
+{
+  "malaria": {
+    "condition": "Malaria",
+    "medications": [
+      {
+        "name": "Artemether-Lumefantrine (Coartem)",
+        "localNames": ["Coartem", "Lonart", "Lumartem"],
+        "type": "antimalarial",
+        "availability": "OTC",
+        "manufacturer": ["Novartis", "Cipla", "Ajanta Pharma"],
+        "dosage": {
+          "adult": "4 tablets twice daily for 3 days",
+          "pediatric_weight_based": [
+            { "weight_kg": "5-14", "dose": "1 tablet twice daily for 3 days" },
+            { "weight_kg": "15-24", "dose": "2 tablets twice daily for 3 days" },
+            { "weight_kg": "25-34", "dose": "3 tablets twice daily for 3 days" },
+            { "weight_kg": "35+", "dose": "4 tablets twice daily for 3 days" }
+          ]
+        },
+        "instructions": "Take with food or milk. Complete full course even if symptoms improve.",
+        "contraindications": ["pregnancy_first_trimester", "severe_liver_disease", "severe_kidney_disease"],
+        "price_range_ngn": "1500-3000",
+        "price_range_ghs": "30-60"
+      },
+      {
+        "name": "Artesunate-Amodiaquine",
+        "localNames": ["Artesunate-Amodiaquine", "Coarsucam"],
+        "type": "antimalarial",
+        "availability": "OTC",
+        "manufacturer": ["Sanofi", "Cipla"],
+        "dosage": {
+          "adult": "4 tablets once daily for 3 days",
+          "pediatric_age_based": [
+            { "age_months": "2-11", "dose": "1 tablet once daily for 3 days" },
+            { "age_years": "1-5", "dose": "1 tablet once daily for 3 days" },
+            { "age_years": "6-13", "dose": "2 tablets once daily for 3 days" },
+            { "age_years": "14+", "dose": "4 tablets once daily for 3 days" }
+          ]
+        },
+        "instructions": "Take on empty stomach. Avoid fatty foods 3 hours before and after.",
+        "contraindications": ["severe_malaria", "pregnancy_first_trimester"],
+        "price_range_ngn": "1200-2500",
+        "price_range_ghs": "25-50"
+      },
+      {
+        "name": "Paracetamol (Fever Relief)",
+        "localNames": ["Panadol", "Emzor Paracetamol", "M&B Paracetamol"],
+        "type": "analgesic_antipyretic",
+        "availability": "OTC",
+        "manufacturer": ["GSK", "Emzor", "May & Baker"],
+        "dosage": {
+          "adult": "500-1000mg every 6 hours (max 4g/day)",
+          "pediatric_weight_based": [
+            { "weight_kg": "6-8", "dose": "80mg every 6 hours" },
+            { "weight_kg": "8-10", "dose": "120mg every 6 hours" },
+            { "weight_kg": "10-13", "dose": "160mg every 6 hours" },
+            { "weight_kg": "13-16", "dose": "240mg every 6 hours" },
+            { "weight_kg": "16-20", "dose": "320mg every 6 hours" },
+            { "weight_kg": "20+", "dose": "500mg every 6 hours" }
+          ]
+        },
+        "instructions": "Take with water. Do not exceed maximum daily dose.",
+        "contraindications": ["severe_liver_disease", "alcohol_abuse"],
+        "price_range_ngn": "200-500",
+        "price_range_ghs": "5-10"
+      }
+    ]
+  },
+  "typhoid": {
+    "condition": "Typhoid Fever",
+    "medications": [
+      {
+        "name": "Oral Rehydration Salts (ORS)",
+        "localNames": ["ORS", "Electrolade", "Pedialyte"],
+        "type": "electrolyte_solution",
+        "availability": "OTC",
+        "manufacturer": ["WHO Formula", "Various"],
+        "dosage": {
+          "adult": "1 sachet dissolved in 1 liter of clean water, drink frequently",
+          "pediatric_age_based": [
+            { "age_months": "0-6", "dose": "50-100ml after each loose stool" },
+            { "age_months": "6-24", "dose": "100-200ml after each loose stool" },
+            { "age_years": "2-10", "dose": "200-400ml after each loose stool" },
+            { "age_years": "10+", "dose": "400-800ml after each loose stool" }
+          ]
+        },
+        "instructions": "Prepare fresh solution daily. Discard after 24 hours. Use clean water.",
+        "contraindications": ["severe_dehydration_requiring_iv", "intestinal_obstruction"],
+        "price_range_ngn": "100-300",
+        "price_range_ghs": "2-6"
+      },
+      {
+        "name": "Paracetamol (Fever Relief)",
+        "localNames": ["Panadol", "Emzor Paracetamol", "M&B Paracetamol"],
+        "type": "analgesic_antipyretic",
+        "availability": "OTC",
+        "manufacturer": ["GSK", "Emzor", "May & Baker"],
+        "dosage": {
+          "adult": "500-1000mg every 6 hours (max 4g/day)",
+          "pediatric_weight_based": [
+            { "weight_kg": "6-8", "dose": "80mg every 6 hours" },
+            { "weight_kg": "8-10", "dose": "120mg every 6 hours" },
+            { "weight_kg": "10-13", "dose": "160mg every 6 hours" },
+            { "weight_kg": "13-16", "dose": "240mg every 6 hours" },
+            { "weight_kg": "16-20", "dose": "320mg every 6 hours" },
+            { "weight_kg": "20+", "dose": "500mg every 6 hours" }
+          ]
+        },
+        "instructions": "Take with water. Do not exceed maximum daily dose.",
+        "contraindications": ["severe_liver_disease", "alcohol_abuse"],
+        "price_range_ngn": "200-500",
+        "price_range_ghs": "5-10"
+      },
+      {
+        "name": "Probiotics",
+        "localNames": ["Yakult", "Vitabiotic", "Probiotic Capsules"],
+        "type": "probiotic",
+        "availability": "OTC",
+        "manufacturer": ["Various"],
+        "dosage": {
+          "adult": "1-2 capsules daily or 1 bottle daily",
+          "pediatric_age_based": [
+            { "age_years": "2-5", "dose": "1/2 bottle or 1 capsule daily" },
+            { "age_years": "6+", "dose": "1 bottle or 1-2 capsules daily" }
+          ]
+        },
+        "instructions": "Take with food. Continue for 2 weeks after symptoms resolve.",
+        "contraindications": ["immunocompromised_patients"],
+        "price_range_ngn": "500-2000",
+        "price_range_ghs": "10-40"
+      }
+    ]
+  },
+  "respiratory_infection": {
+    "condition": "Respiratory Tract Infection",
+    "medications": [
+      {
+        "name": "Cough Syrup (Guaifenesin)",
+        "localNames": ["Benylin", "Coflin", "Emzor Cough Syrup"],
+        "type": "expectorant",
+        "availability": "OTC",
+        "manufacturer": ["Johnson & Johnson", "Emzor", "Various"],
+        "dosage": {
+          "adult": "10-20ml every 4-6 hours",
+          "pediatric_age_based": [
+            { "age_years": "2-5", "dose": "2.5-5ml every 4-6 hours" },
+            { "age_years": "6-11", "dose": "5-10ml every 4-6 hours" },
+            { "age_years": "12+", "dose": "10-20ml every 4-6 hours" }
+          ]
+        },
+        "instructions": "Drink plenty of water. Do not use if cough persists > 7 days.",
+        "contraindications": ["chronic_cough", "asthma", "children_under_2"],
+        "price_range_ngn": "800-1500",
+        "price_range_ghs": "15-30"
+      },
+      {
+        "name": "Paracetamol (Fever Relief)",
+        "localNames": ["Panadol", "Emzor Paracetamol", "M&B Paracetamol"],
+        "type": "analgesic_antipyretic",
+        "availability": "OTC",
+        "manufacturer": ["GSK", "Emzor", "May & Baker"],
+        "dosage": {
+          "adult": "500-1000mg every 6 hours (max 4g/day)",
+          "pediatric_weight_based": [
+            { "weight_kg": "6-8", "dose": "80mg every 6 hours" },
+            { "weight_kg": "8-10", "dose": "120mg every 6 hours" },
+            { "weight_kg": "10-13", "dose": "160mg every 6 hours" },
+            { "weight_kg": "13-16", "dose": "240mg every 6 hours" },
+            { "weight_kg": "16-20", "dose": "320mg every 6 hours" },
+            { "weight_kg": "20+", "dose": "500mg every 6 hours" }
+          ]
+        },
+        "instructions": "Take with water. Do not exceed maximum daily dose.",
+        "contraindications": ["severe_liver_disease", "alcohol_abuse"],
+        "price_range_ngn": "200-500",
+        "price_range_ghs": "5-10"
+      },
+      {
+        "name": "Vitamin C",
+        "localNames": ["Redoxon", "Celin", "Vitamin C Tablets"],
+        "type": "vitamin_supplement",
+        "availability": "OTC",
+        "manufacturer": ["Bayer", "Various"],
+        "dosage": {
+          "adult": "500-1000mg daily",
+          "pediatric_age_based": [
+            { "age_years": "4-8", "dose": "25mg daily" },
+            { "age_years": "9-13", "dose": "45mg daily" },
+            { "age_years": "14+", "dose": "65-90mg daily" }
+          ]
+        },
+        "instructions": "Take with food. Increase fluid intake.",
+        "contraindications": ["kidney_stones", "hemochromatosis"],
+        "price_range_ngn": "500-1500",
+        "price_range_ghs": "10-30"
+      }
+    ]
+  },
+  "dengue": {
+    "condition": "Dengue Fever",
+    "medications": [
+      {
+        "name": "Paracetamol (Fever & Pain Relief)",
+        "localNames": ["Panadol", "Emzor Paracetamol", "M&B Paracetamol"],
+        "type": "analgesic_antipyretic",
+        "availability": "OTC",
+        "manufacturer": ["GSK", "Emzor", "May & Baker"],
+        "dosage": {
+          "adult": "500-1000mg every 6 hours (max 4g/day)",
+          "pediatric_weight_based": [
+            { "weight_kg": "6-8", "dose": "80mg every 6 hours" },
+            { "weight_kg": "8-10", "dose": "120mg every 6 hours" },
+            { "weight_kg": "10-13", "dose": "160mg every 6 hours" },
+            { "weight_kg": "13-16", "dose": "240mg every 6 hours" },
+            { "weight_kg": "16-20", "dose": "320mg every 6 hours" },
+            { "weight_kg": "20+", "dose": "500mg every 6 hours" }
+          ]
+        },
+        "instructions": "CRITICAL: AVOID aspirin and ibuprofen (risk of bleeding). Drink plenty of fluids.",
+        "contraindications": ["severe_liver_disease", "alcohol_abuse"],
+        "price_range_ngn": "200-500",
+        "price_range_ghs": "5-10"
+      },
+      {
+        "name": "Oral Rehydration Salts (ORS)",
+        "localNames": ["ORS", "Electrolade", "Pedialyte"],
+        "type": "electrolyte_solution",
+        "availability": "OTC",
+        "manufacturer": ["WHO Formula", "Various"],
+        "dosage": {
+          "adult": "1 sachet dissolved in 1 liter of clean water, drink frequently",
+          "pediatric_age_based": [
+            { "age_months": "0-6", "dose": "50-100ml after each loose stool" },
+            { "age_months": "6-24", "dose": "100-200ml after each loose stool" },
+            { "age_years": "2-10", "dose": "200-400ml after each loose stool" },
+            { "age_years": "10+", "dose": "400-800ml after each loose stool" }
+          ]
+        },
+        "instructions": "Essential for preventing dehydration. Monitor for warning signs (bleeding, severe abdominal pain).",
+        "contraindications": ["severe_dehydration_requiring_iv", "intestinal_obstruction"],
+        "price_range_ngn": "100-300",
+        "price_range_ghs": "2-6"
+      }
+    ]
+  },
+  "covid19": {
+    "condition": "COVID-19",
+    "medications": [
+      {
+        "name": "Paracetamol (Fever Relief)",
+        "localNames": ["Panadol", "Emzor Paracetamol", "M&B Paracetamol"],
+        "type": "analgesic_antipyretic",
+        "availability": "OTC",
+        "manufacturer": ["GSK", "Emzor", "May & Baker"],
+        "dosage": {
+          "adult": "500-1000mg every 6 hours (max 4g/day)",
+          "pediatric_weight_based": [
+            { "weight_kg": "6-8", "dose": "80mg every 6 hours" },
+            { "weight_kg": "8-10", "dose": "120mg every 6 hours" },
+            { "weight_kg": "10-13", "dose": "160mg every 6 hours" },
+            { "weight_kg": "13-16", "dose": "240mg every 6 hours" },
+            { "weight_kg": "16-20", "dose": "320mg every 6 hours" },
+            { "weight_kg": "20+", "dose": "500mg every 6 hours" }
+          ]
+        },
+        "instructions": "Rest and isolate. Monitor oxygen levels if possible. Seek care if breathing difficulty develops.",
+        "contraindications": ["severe_liver_disease", "alcohol_abuse"],
+        "price_range_ngn": "200-500",
+        "price_range_ghs": "5-10"
+      },
+      {
+        "name": "Vitamin C + Zinc",
+        "localNames": ["Redoxon Double Action", "Celin + Zinc", "Immunace"],
+        "type": "vitamin_supplement",
+        "availability": "OTC",
+        "manufacturer": ["Bayer", "Various"],
+        "dosage": {
+          "adult": "1000mg Vitamin C + 15mg Zinc daily",
+          "pediatric_age_based": [
+            { "age_years": "4-8", "dose": "25mg Vitamin C + 5mg Zinc daily" },
+            { "age_years": "9-13", "dose": "45mg Vitamin C + 8mg Zinc daily" },
+            { "age_years": "14+", "dose": "65-90mg Vitamin C + 11mg Zinc daily" }
+          ]
+        },
+        "instructions": "Take with food. May support immune function during recovery.",
+        "contraindications": ["kidney_stones", "hemochromatosis"],
+        "price_range_ngn": "1000-2500",
+        "price_range_ghs": "20-50"
+      }
+    ]
+  }
+}
+

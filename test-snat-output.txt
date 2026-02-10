@@ -1,0 +1,80 @@
+
+════════════════════════════════════════════════════════════════
+🧪 SOVRYN AI GOVERNANCE - SNAT ACCESS CONTROL TEST SUITE
+════════════════════════════════════════════════════════════════
+
+📋 TEST SUITE 1: NATIONAL SNAT REGISTRATION
+
+✅ PASS: 1.1 - Register Nigeria SNAT
+✅ PASS: 1.2 - Register Ghana SNAT
+✅ PASS: 1.3 - Register Kenya SNAT
+✅ PASS: 1.4 - Reject invalid ISO code (too short)
+✅ PASS: 1.5 - Reject empty country name
+
+📋 TEST SUITE 2: SNAT SIGNING
+
+✅ PASS: 2.1 - Sign Nigeria SNAT
+✅ PASS: 2.2 - Reject double signing
+✅ PASS: 2.3 - Reject signing unregistered nation
+
+📋 TEST SUITE 3: ECONOMIC DATA ACCESS CONTROL
+
+✅ PASS: 3.1 - Allow economic data access for signed SNAT (Nigeria)
+✅ PASS: 3.2 - Deny economic data access for unsigned SNAT (Ghana)
+✅ PASS: 3.3 - Deny economic data access for unsigned SNAT (Kenya)
+✅ PASS: 3.4 - Track untrusted access attempts
+
+📋 TEST SUITE 4: MARKET DATA ACCESS CONTROL
+
+✅ PASS: 4.1 - Allow market data access for signed SNAT (Nigeria)
+✅ PASS: 4.2 - Deny market data access for unsigned SNAT (Ghana)
+✅ PASS: 4.3 - Deny market data access for unsigned SNAT (Kenya)
+
+📋 TEST SUITE 5: 4-LAYER HANDSHAKE VERIFICATION
+
+✅ PASS: 5.1 - Verify fully trusted user (all 4 layers)
+✅ PASS: 5.2 - Verify partially trusted user (3 layers)
+✅ PASS: 5.3 - Verify minimally trusted user (1 layer)
+✅ PASS: 5.4 - Verify untrusted user (0 layers)
+✅ PASS: 5.5 - Reject invalid user address
+✅ PASS: 5.6 - Reject invalid PFF truth hash
+
+📋 TEST SUITE 6: USER TRUST STATUS QUERIES
+
+✅ PASS: 6.1 - Check trusted user account
+✅ PASS: 6.2 - Check untrusted user account
+✅ PASS: 6.3 - Check non-existent user account
+
+📋 TEST SUITE 7: INTEGRATION TESTS
+
+✅ PASS: 7.1 - Sign Ghana SNAT and verify access
+✅ PASS: 7.2 - Verify multiple nations with different SNAT status
+✅ PASS: 7.3 - Verify trust score calculation for different layer combinations
+
+════════════════════════════════════════════════════════════════
+📊 TEST RESULTS SUMMARY
+════════════════════════════════════════════════════════════════
+
+Total Tests:  27
+✅ Passed:    27
+❌ Failed:    0
+Success Rate: 100.00%
+
+════════════════════════════════════════════════════════════════
+🎯 FINAL STATE
+════════════════════════════════════════════════════════════════
+
+Total SNAT Nations:      3
+Total Trusted Users:     1
+Total Untrusted Access:  6
+
+SNAT Status by Nation:
+  NGA (Nigeria): ✅ SIGNED
+  GHA (Ghana): ✅ SIGNED
+  KEN (Kenya): ❌ NOT SIGNED
+
+════════════════════════════════════════════════════════════════
+Born in Lagos, Nigeria. Built for Humanity. 🇳🇬
+Architect: ISREAL OKORO
+════════════════════════════════════════════════════════════════
+

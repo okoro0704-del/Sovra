@@ -1,0 +1,26 @@
+{
+  "name": "@vitalia/contracts",
+  "version": "1.0.0",
+  "description": "Vitalia Smart Contracts - VIDA SAA & nVIDA Logic",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@vitalia/pff-engine": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "vida",
+    "nvida",
+    "blockchain",
+    "vitalia"
+  ],
+  "author": "Vitalia Foundation",
+  "license": "MIT"
+}
+

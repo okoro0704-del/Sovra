@@ -1,0 +1,31 @@
+{
+  "name": "@vitalia/one",
+  "version": "1.0.0",
+  "description": "Vitalia One - Personal Sovereign Identity App",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@vitalia/pff-engine": "*",
+    "@vitalia/contracts": "*",
+    "react": "^18.2.0",
+    "react-native": "^0.73.0",
+    "react-native-vision-camera": "^4.0.0",
+    "react-native-reanimated": "^3.6.0",
+    "@react-navigation/native": "^6.1.0",
+    "@react-navigation/stack": "^6.3.0",
+    "react-native-screens": "^3.29.0",
+    "react-native-safe-area-context": "^4.8.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-native": "^0.72.0",
+    "typescript": "^5.3.0"
+  }
+}
+

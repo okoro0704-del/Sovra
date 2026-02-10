@@ -1,0 +1,118 @@
+════════════════════════════════════════════════════════════════
+🧪 SNAT-LINKED VIDA CAP MINTING - TEST SUITE
+════════════════════════════════════════════════════════════════
+
+📋 Test Suite 1: Genesis Mint
+
+✅ Genesis mint - Architect receives 5 VIDA Cap
+✅ Genesis mint - National Escrow receives 5 VIDA Cap
+✅ Genesis mint - Total supply is 10 VIDA Cap
+
+📋 Test Suite 2: SNAT ACTIVE Minting
+
+✅ SNAT ACTIVE - Citizen receives 5 VIDA Cap (10-Unit Era)
+✅ SNAT ACTIVE - Nation receives 5 VIDA Cap (100% allocation)
+✅ SNAT ACTIVE - Global Citizen Block receives 0 VIDA Cap
+✅ SNAT ACTIVE - Total active mints is 1
+
+📋 Test Suite 3: SNAT INACTIVE Minting
+
+✅ SNAT INACTIVE - Citizen receives 5 VIDA Cap (10-Unit Era)
+✅ SNAT INACTIVE - Nation receives 2.5 VIDA Cap (50% allocation)
+✅ SNAT INACTIVE - Global Citizen Block receives 2.5 VIDA Cap (50% allocation)
+✅ SNAT INACTIVE - Total inactive mints is 1
+✅ SNAT INACTIVE - Total global pool allocations is 2.5 VIDA Cap
+
+📋 Test Suite 4: SNAT FLUSHED Minting
+
+✅ SNAT FLUSHED - Citizen receives 5 VIDA Cap (10-Unit Era)
+✅ SNAT FLUSHED - Nation receives 0 VIDA Cap (0% allocation)
+✅ SNAT FLUSHED - Global Citizen Block receives 5 VIDA Cap (100% allocation)
+✅ SNAT FLUSHED - Total flushed mints is 1
+
+📋 Test Suite 5: Citizen Verification
+
+✅ Citizen verification - Total verified citizens is 3
+✅ Citizen verification - Citizen 1 is verified
+✅ Citizen verification - Citizen 2 is verified
+✅ Citizen verification - Citizen 3 is verified
+
+📋 Test Suite 6: PFF Signature Anti-Replay
+
+✅ Anti-replay - Cannot reuse PFF signature
+✅ Anti-replay - Signature marked as used
+✅ Anti-replay - Signature 2 marked as used
+✅ Anti-replay - Signature 3 marked as used
+
+📋 Test Suite 7: Nation Escrow Registration
+
+✅ Nation escrow - Nigeria escrow registered
+✅ Nation escrow - Ghana escrow registered
+✅ Nation escrow - Kenya escrow registered
+
+📋 Test Suite 8: Statistics Tracking
+
+✅ Statistics - Total PFF handshakes is 3
+✅ Statistics - Total SNAT active mints is 1
+✅ Statistics - Total SNAT inactive mints is 1
+✅ Statistics - Total SNAT flushed mints is 1
+✅ Statistics - Total global pool allocations is 7.5 VIDA Cap
+
+📋 Test Suite 9: Total Supply Validation
+
+✅ Total supply - Total supply is 40 VIDA Cap
+
+📋 Test Suite 10: Event Emission
+
+✅ Events - 3 PFFHandshakeMint events emitted
+✅ Events - First mint has SNAT status ACTIVE (1)
+✅ Events - Second mint has SNAT status INACTIVE (0)
+✅ Events - Third mint has SNAT status FLUSHED (2)
+✅ Events - 3 NationEscrowRegistered events emitted
+
+════════════════════════════════════════════════════════════════
+📊 TEST RESULTS SUMMARY
+════════════════════════════════════════════════════════════════
+
+Total Tests:  38
+✅ Passed:    38
+❌ Failed:    0
+Success Rate: 100.00%
+
+════════════════════════════════════════════════════════════════
+🎯 FINAL STATE
+════════════════════════════════════════════════════════════════
+
+Total Supply:              40 VIDA Cap
+Total Verified Citizens:   3
+Total PFF Handshakes:      3
+Total SNAT Active Mints:   1
+Total SNAT Inactive Mints: 1
+Total SNAT Flushed Mints:  1
+Total Global Pool Alloc:   7.5 VIDA Cap
+
+Balances by Address:
+  Architect:           5 VIDA Cap
+  National Escrow:     5 VIDA Cap
+  Global Citizen Block: 7.5 VIDA Cap
+  Nigeria Escrow:      5 VIDA Cap
+  Ghana Escrow:        2.5 VIDA Cap
+  Kenya Escrow:        0 VIDA Cap
+  Citizen 1:           5 VIDA Cap
+  Citizen 2:           5 VIDA Cap
+  Citizen 3:           5 VIDA Cap
+
+SNAT Status by Nation:
+  NG (Nigeria): ACTIVE
+  GH (Ghana):   INACTIVE
+  KE (Kenya):   FLUSHED
+
+════════════════════════════════════════════════════════════════
+✅ ALL TESTS PASSED! 🎉
+════════════════════════════════════════════════════════════════
+
+"IF A NATION DOES NOT CLAIM SOVEREIGNTY, THE PEOPLE INHERIT THE VAULT."
+
+Born in Lagos, Nigeria. Built for Humanity. 🇳🇬
+Architect: ISREAL OKORO
+

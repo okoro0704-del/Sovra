@@ -79,6 +79,36 @@
   line-height: 1.6;
 }
 
+.manualAuditButton {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: #007AFF;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.manualAuditButton:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.manualAuditButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auditSuccess {
+  color: #0a7c42;
+  font-size: 0.95rem;
+}
+
+.auditError {
+  color: #c0392b;
+  font-size: 0.95rem;
+}
+
 @media (prefers-color-scheme: dark) {
   .statCard,
   .section {

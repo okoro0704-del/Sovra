@@ -1,0 +1,31 @@
+{
+  "name": "@vitalia/pff-engine",
+  "version": "2.0.0",
+  "description": "Presence Factor Fabric - POS Algorithm for rPPG Heartbeat Detection",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "react-native-vision-camera": "^4.0.0",
+    "react-native-reanimated": "^3.6.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "jest": "^29.7.0",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "rPPG",
+    "heartbeat",
+    "biometric",
+    "liveness-detection",
+    "vitalia"
+  ],
+  "author": "Vitalia Foundation",
+  "license": "MIT"
+}
+

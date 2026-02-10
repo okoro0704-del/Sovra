@@ -1,0 +1,119 @@
+{
+  "project": {
+    "name": "Vitalia",
+    "tagline": "Biological Economic Operating System",
+    "birthplace": "Lagos, Nigeria",
+    "version": "1.0.0-genesis"
+  },
+  "tokens": {
+    "vida": {
+      "name": "Vitalia",
+      "symbol": "VIDA",
+      "unicodeSymbol": "Ѵ",
+      "decimals": 18,
+      "subunit": "Vits",
+      "description": "Elastic Pendulum Asset - Ascendant Asset Class"
+    },
+    "nsov": {
+      "name": "Naira-Sovereign",
+      "symbol": "NSOV",
+      "decimals": 18,
+      "peg": "1:1 NGN",
+      "description": "Fiat-backed stablecoin pegged to Nigerian Naira"
+    }
+  },
+  "supply": {
+    "hardCap": "1000000000",
+    "hardCapVits": "1000000000000000000000000000",
+    "pendulumFloor": "500000000",
+    "pendulumFloorVits": "500000000000000000000000000",
+    "pendulumCeiling": "750000000",
+    "pendulumCeilingVits": "750000000000000000000000000",
+    "initialUserMint": "10",
+    "initialUserMintVits": "10000000000000000000",
+    "maxInitialUsers": "100000000",
+    "description": "Supply mechanics with elastic pendulum (500M floor, 750M ceiling, 1B hard cap)"
+  },
+  "economics": {
+    "transactionFeeRate": 0.02,
+    "transactionFeePercent": "2%",
+    "quadSplit": {
+      "originCountry": 0.25,
+      "destinationCountry": 0.25,
+      "projectVault": 0.25,
+      "deflationBurn": 0.25,
+      "description": "The Four Pillars - Equal 25% distribution"
+    },
+    "countrySplit": {
+      "government": 0.5,
+      "citizenDividend": 0.5,
+      "description": "Within each country's 25%, split 50/50 between government and citizen dividend pool"
+    },
+    "burnMechanism": {
+      "feesBurned": 0.25,
+      "description": "25% of all transaction fees permanently burned"
+    }
+  },
+  "pff": {
+    "name": "Presence Factor Fabric",
+    "technology": "rPPG",
+    "fullName": "Remote Photoplethysmography",
+    "method": "Heartbeat detection via camera color changes",
+    "validBpmRange": {
+      "min": 45,
+      "max": 180,
+      "description": "Normal human heart rate range"
+    },
+    "thresholds": {
+      "minConfidence": 75,
+      "minSignalQuality": 60,
+      "temporalConsistency": 0.85,
+      "analysisWindowSeconds": 10
+    },
+    "antiSpoofing": {
+      "temporalConsistencyCheck": true,
+      "signalNaturalnessCheck": true,
+      "multiChannelValidation": true,
+      "description": "Multi-layer anti-spoofing protection"
+    }
+  },
+  "reserves": {
+    "nsovReserveRatio": 1.0,
+    "nsovReservePercent": "100%",
+    "description": "NSOV requires 1:1 backing with physical Naira reserves in Central Bank",
+    "nairaDecimals": 2,
+    "nairaSubunit": "kobo",
+    "conversionFactor": "1 NSOV (1e18) = 1 NGN = 100 kobo"
+  },
+  "addresses": {
+    "projectVault": "0xVITALIA_PROJECT_VAULT",
+    "burnAddress": "0x000000000000000000000000000000000000dEaD",
+    "description": "Special system addresses"
+  },
+  "precision": {
+    "tokenDecimals": 18,
+    "nairaDecimals": 2,
+    "basisPoints": 10000,
+    "description": "All financial math handles 18 decimal precision (Vits)"
+  },
+  "governance": {
+    "projectVaultType": "Time-Locked Multisig",
+    "projectVaultPurpose": "Infrastructure & Reserve Yield",
+    "citizenDividendDistribution": "Proportional to verified citizens",
+    "description": "Decentralized governance with transparent fund allocation"
+  },
+  "metadata": {
+    "genesis": {
+      "message": "Born in Lagos, Built for the World",
+      "philosophy": "Biological Economic Operating System",
+      "mission": "Economic justice through presence-based verification"
+    },
+    "technicalStack": {
+      "smartContracts": "Solidity ^0.8.20",
+      "offChainLogic": "TypeScript",
+      "signalProcessing": "FFT, Bandpass Filtering, rPPG",
+      "blockchain": "EVM-compatible"
+    }
+  }
+}
+

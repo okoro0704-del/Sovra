@@ -7,6 +7,7 @@ import verifyRouter from './routes/verify';
 import consentRouter from './routes/consent';
 import tokenRouter from './routes/token';
 import fasttrackRouter from './routes/fasttrack';
+import sovrynRouter from './routes/sovryn';
 import { initializeRedis } from './services/temporalCache';
 
 dotenv.config();
@@ -39,6 +40,7 @@ app.use('/v1/verify', validateApiKey, verifyRouter);
 app.use('/v1/consent', validateApiKey, consentRouter);
 app.use('/v1/token', validateApiKey, tokenRouter);
 app.use('/v1/fasttrack', validateApiKey, fasttrackRouter);
+app.use('/v1/sovryn', validateApiKey, sovrynRouter);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
