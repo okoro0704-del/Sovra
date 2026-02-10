@@ -1,26 +1,19 @@
 /**
- * SOVRYN Force Audit & Minting Release API
- * POST /v1/sovryn/audit - Manual Audit trigger (emergency release)
- * POST /v1/sovryn/pff/vitalized - PFF vitalization → chain handshake (SovereignMint; Architect 1.1+4.0 VIDA)
- * GET /v1/sovryn/balance - Architect balance (from citizens + chain); real-time after tx mined
- * GET /v1/sovryn/balance/:address - Real-time balance for any address
+ * SOVRYN Force Audit & Minting Release API (Global base: apps/api)
+ * POST /v1/sovryn/audit - Manual Audit (single architect)
+ * POST /v1/sovryn/audit-all - Manual Audit all; accepts country_code to set which National Block to credit (defaults to user's detected location per citizen)
  */
 
 import { Router, Request, Response } from 'express';
 import { sovrynAuditRequest, sovrynAuditRequestForAll } from '../services/sovrynAudit';
-import { onVitalizedTriggerChainHandshake } from '../services/chainHandshake';
-import { getBalance } from '../blockchain/sovrynProvider';
-import { getArchitectFromCitizens } from '../services/sovrynAudit';
-import { supabase } from '../config/supabase';
 
 const router = Router();
 
 /**
  * POST /v1/sovryn/audit
- * Manual Audit: triggers sovrynAuditRequest() directly.
- * Use when automatic hook failed. Requires X-API-KEY.
+ * Optional: query or body country_code to override detected National Block for the architect.
  */
-router.post('/audit', async (_req: Request, res: Response) => {
+router.post('/audit', async (req: Request, res: Response) => {
   try {
     const result = await sovrynAuditRequest();
 
@@ -65,17 +58,19 @@ router.post('/audit', async (_req: Request, res: Response) => {
 
 /**
  * POST /v1/sovryn/audit-all
- * Manual Audit (all): scan citizens where is_vitalized=true and minting_status=null,
- * trigger 11 VIDA minting for each, update minting_status=COMPLETED.
- * Query/body: country_code (optional) – which National Block to credit; defaults to user's detected location per citizen.
+ * Dynamic routing: accept country_code (query or body) to set which National Block to credit for all processed citizens.
+ * If omitted, defaults to user's detected location per citizen (IP / sovereign_identity / metadata).
  */
 router.post('/audit-all', async (req: Request, res: Response) => {
   try {
-    const countryCode = (req.query.country_code as string) ?? (req.body?.country_code as string) ?? undefined;
+    const countryCode =
+      (req.query.country_code as string) ?? (req.body?.country_code as string) ?? undefined;
+
     const result = await sovrynAuditRequestForAll({
       requestHeaders: req.headers as Record<string, string | undefined>,
-      countryCodeOverride: countryCode,
+      countryCodeOverride: countryCode || undefined,
     });
+
     const ok = result.success && result.failed === 0;
     res.status(ok ? 200 : 207).json({
       success: result.success,

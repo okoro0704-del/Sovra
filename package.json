@@ -4,6 +4,7 @@
   "description": "SOVRN Protocol - Hub and Spoke Architecture",
   "private": true,
   "workspaces": [
+    "packages/*",
     "global-hub/packages/*",
     "spokes/*/apps/*"
   ],
@@ -14,6 +15,8 @@
     "dev:nigeria:api": "cd spokes/nigeria && npm run dev:api",
     "dev:nigeria:dashboard": "cd spokes/nigeria && npm run dev:dashboard",
     "dev:nigeria:gateway": "cd spokes/nigeria && npm run dev:gateway",
+    "dev:global:api": "cd spokes/global && npm run dev:api",
+    "build:global": "cd spokes/global && npm run build",
     "install:all": "npm install && cd global-hub && npm install && cd ../spokes/nigeria && npm install"
   },
   "keywords": [

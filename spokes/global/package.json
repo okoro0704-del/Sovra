@@ -1,0 +1,14 @@
+{
+  "name": "@sovrn/global-spoke",
+  "version": "1.0.0",
+  "description": "Global spoke - universal endpoint for all spokes",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev:api": "npm run dev --workspace=@sovrn/global-api"
+  },
+  "keywords": ["sovrn", "global", "universal", "api"],
+  "author": "",
+  "license": "MIT"
+}

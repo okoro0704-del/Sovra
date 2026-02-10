@@ -7,6 +7,7 @@ export * from './security';
 export * from './fasttrack';
 export * from './hubSpokeHandshake';
 export * from './constants';
+export * from './sovrynCore';
 
 // PFF Neural Analyzer - Privacy-First Liveness Detection
 export * from './liveness/neuralAnalyzer';

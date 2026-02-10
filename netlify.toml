@@ -1,6 +1,6 @@
 [build]
-  # Point this to your Nigeria API folder
-  base = "spokes/nigeria/apps/api"
+  # Global base directory: universal SOVRYN endpoint (SOVRYN_SECRET + SUPABASE_URL applied via Netlify env)
+  base = "apps/api"
   command = "npm run build"
   publish = "dist"
 

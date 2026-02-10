@@ -1,0 +1,21 @@
+{
+  "name": "@sovrn/core-logic",
+  "version": "1.0.0",
+  "description": "Shared: Minting, Face Audit, WebAuthn - used by spokes/global and spokes/nigeria",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["sovrn", "core", "minting", "face-audit", "webauthn"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@sovrn/shared": "file:../../global-hub/packages/shared"
+  }
+}
