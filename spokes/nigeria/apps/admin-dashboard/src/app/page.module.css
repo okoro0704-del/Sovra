@@ -105,6 +105,17 @@
   font-weight: 500;
 }
 
+.connectedHint {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--success);
+  margin-bottom: 2rem;
+  padding: 0.6rem 1rem;
+  background: var(--success-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--success);
+}
+
 /* Command section */
 .commandSection {
   background: var(--command-bg);

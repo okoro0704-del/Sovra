@@ -193,7 +193,12 @@ export default function Home() {
 
         {(!API_URL || !API_KEY) && (
           <p className={styles.configHint}>
-            Set <code>NEXT_PUBLIC_API_URL</code> and <code>NEXT_PUBLIC_API_KEY</code> to load live stats and use Manual Audit.
+            Set <code>NEXT_PUBLIC_API_URL</code> and <code>NEXT_PUBLIC_API_KEY</code> in Netlify (Site settings → Environment variables), then trigger a new deploy so the build picks them up.
+          </p>
+        )}
+        {API_URL && API_KEY && stats.citizens === 0 && stats.entities === 0 && stats.consents === 0 && (
+          <p className={styles.connectedHint}>
+            Connected to PFF/SENTINEL API. Counts will update when data exists in the database (citizens, registered_entities, consent_logs).
           </p>
         )}
 
