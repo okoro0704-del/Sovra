@@ -1,0 +1,10 @@
+# Netlify build config – deploy Nigeria admin dashboard (Next.js)
+# Fixes "Page not found" by building and publishing the correct app.
+
+[build]
+  base    = "spokes/nigeria/apps/admin-dashboard"
+  command = "npm run build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "18"
