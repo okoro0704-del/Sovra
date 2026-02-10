@@ -170,8 +170,11 @@ export default function Home() {
       )}
 
       <div className={styles.container}>
-        <h1 className={styles.title}>SOVRN Protocol Admin Dashboard</h1>
-        <p className={styles.subtitle}>Decentralized Identity & Consent Oversight</p>
+        <header className={styles.header}>
+          <span className={styles.badge}>Admin Command Center</span>
+          <h1 className={styles.title}>SOVRN Protocol Admin Dashboard</h1>
+          <p className={styles.subtitle}>Decentralized Identity & Consent Oversight</p>
+        </header>
 
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
@@ -194,13 +197,13 @@ export default function Home() {
           </p>
         )}
 
-        <section className={styles.section}>
+        <section className={styles.commandSection}>
           <h2>Command</h2>
           <p>
             Emergency SOVRYN controls. Manual Audit scans for citizens with <code>is_vitalized: true</code> and{' '}
             <code>minting_status: null</code>, triggers 11 VIDA minting for each, then updates status.
           </p>
-          <div style={{ marginTop: '1rem' }}>
+          <div className={styles.commandActions}>
             <button
               type="button"
               className={styles.manualAuditButton}
@@ -209,20 +212,15 @@ export default function Home() {
             >
               {auditLoading ? 'Running…' : 'Manual Audit'}
             </button>
-            {auditResult && (
-              <div
-                className={auditResult.ok ? styles.auditSuccess : styles.auditError}
-                style={{ marginTop: '0.75rem' }}
-              >
-                {auditResult.message}
-                {auditResult.detail && Object.keys(auditResult.detail).length > 0 && (
-                  <pre style={{ fontSize: '0.85rem', marginTop: '0.5rem', overflow: 'auto' }}>
-                    {JSON.stringify(auditResult.detail, null, 2)}
-                  </pre>
-                )}
-              </div>
-            )}
           </div>
+          {auditResult && (
+            <div className={`${styles.auditResult} ${auditResult.ok ? styles.auditSuccess : styles.auditError}`}>
+              {auditResult.message}
+              {auditResult.detail && Object.keys(auditResult.detail).length > 0 && (
+                <pre>{JSON.stringify(auditResult.detail, null, 2)}</pre>
+              )}
+            </div>
+          )}
         </section>
 
         <div className={styles.sections}>
