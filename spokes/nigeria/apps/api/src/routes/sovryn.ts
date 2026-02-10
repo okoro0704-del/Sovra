@@ -41,6 +41,7 @@ router.post('/audit', async (_req: Request, res: Response) => {
         releaseId: result.releaseId,
         mintingStatus: result.mintingStatus,
         warning: result.error || undefined,
+        redirect_url: process.env.AUTH_REDIRECT || undefined,
       });
       return;
     }
@@ -51,6 +52,7 @@ router.post('/audit', async (_req: Request, res: Response) => {
       message: result.error || 'Conditions not met for release (already completed or not vitalized)',
       architectUid: result.architectUid,
       mintingStatus: result.mintingStatus,
+      redirect_url: process.env.AUTH_REDIRECT || undefined,
     });
   } catch (error) {
     console.error('SOVRYN audit route error:', error);
@@ -81,6 +83,7 @@ router.post('/audit-all', async (_req: Request, res: Response) => {
       failed: result.failed,
       results: result.results,
       error: result.error,
+      redirect_url: process.env.AUTH_REDIRECT || undefined,
     });
   } catch (error) {
     console.error('SOVRYN audit-all route error:', error);
