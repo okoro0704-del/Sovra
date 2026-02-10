@@ -203,3 +203,104 @@ export async function sovrynAuditRequest(): Promise<SovrynAuditResult> {
     mintingStatus: 'COMPLETED',
   };
 }
+
+/** Citizen row for audit-all: is_vitalized true and minting_status null */
+export interface VitalizedCitizenRow {
+  id: string;
+  uid: string;
+  vault_address: string | null;
+  is_vitalized: boolean;
+  minting_status: string | null;
+}
+
+export interface AuditAllResult {
+  success: boolean;
+  processed: number;
+  succeeded: number;
+  failed: number;
+  results: Array<{
+    uid: string;
+    success: boolean;
+    releaseId?: string;
+    error?: string;
+  }>;
+  error?: string;
+}
+
+/**
+ * Scan for all citizens with is_vitalized = true and minting_status = null,
+ * trigger 11 VIDA minting for each, update minting_status to COMPLETED.
+ */
+export async function sovrynAuditRequestForAll(): Promise<AuditAllResult> {
+  const { data: rows, error: fetchError } = await supabase
+    .from('citizens')
+    .select('id, uid, vault_address, is_vitalized, minting_status')
+    .eq('is_vitalized', true)
+    .is('minting_status', null);
+
+  if (fetchError) {
+    return {
+      success: false,
+      processed: 0,
+      succeeded: 0,
+      failed: 0,
+      results: [],
+      error: fetchError.message,
+    };
+  }
+
+  const list = (rows || []) as VitalizedCitizenRow[];
+  const results: AuditAllResult['results'] = [];
+  let succeeded = 0;
+  let failed = 0;
+
+  for (const row of list) {
+    const vaultAddress =
+      row.vault_address ||
+      process.env.ARCHITECT_VAULT_ADDRESS ||
+      row.uid;
+
+    const releaseResult = await releaseVidaCap(row.uid, vaultAddress);
+
+    if (releaseResult.success) {
+      const { error: updateError } = await supabase
+        .from('citizens')
+        .update({
+          minting_status: 'COMPLETED',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('uid', row.uid);
+
+      if (updateError) {
+        results.push({
+          uid: row.uid,
+          success: false,
+          error: `Release ok but status update failed: ${updateError.message}`,
+        });
+        failed += 1;
+      } else {
+        results.push({
+          uid: row.uid,
+          success: true,
+          releaseId: releaseResult.releaseId,
+        });
+        succeeded += 1;
+      }
+    } else {
+      results.push({
+        uid: row.uid,
+        success: false,
+        error: releaseResult.error,
+      });
+      failed += 1;
+    }
+  }
+
+  return {
+    success: failed === 0,
+    processed: list.length,
+    succeeded,
+    failed,
+    results,
+  };
+}

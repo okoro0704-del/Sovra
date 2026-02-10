@@ -79,6 +79,103 @@
   line-height: 1.6;
 }
 
+.sectionHint {
+  font-size: 0.875rem;
+  color: #999;
+  margin-top: 0.5rem;
+}
+
+.configHint {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #888;
+  margin: -2rem 0 2rem;
+}
+
+.configHint code {
+  background: #eee;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.registryButton {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #007AFF;
+  background: transparent;
+  border: 1px solid #007AFF;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.registryButton:hover:not(:disabled) {
+  background: #007AFF;
+  color: #fff;
+}
+
+.registryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.registryTableWrap {
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+
+.registryTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.registryTable th,
+.registryTable td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.registryTable th {
+  font-weight: 600;
+  color: #333;
+}
+
+.faceHash {
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+  word-break: break-all;
+  max-width: 280px;
+}
+
+.toastSuccess,
+.toastError {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  max-width: 90vw;
+}
+
+.toastSuccess {
+  background: #0a7c42;
+  color: #fff;
+}
+
+.toastError {
+  background: #c0392b;
+  color: #fff;
+}
+
 .manualAuditButton {
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
@@ -119,5 +216,26 @@
   .statLabel,
   .section p {
     color: #aaa;
+  }
+  
+  .configHint {
+    color: #888;
+  }
+  
+  .configHint code {
+    background: #333;
+  }
+  
+  .sectionHint {
+    color: #777;
+  }
+  
+  .registryTable th,
+  .registryTable td {
+    border-bottom-color: #333;
+  }
+  
+  .registryTable th {
+    color: #ddd;
   }
 }

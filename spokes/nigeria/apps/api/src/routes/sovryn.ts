@@ -7,7 +7,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { sovrynAuditRequest } from '../services/sovrynAudit';
+import { sovrynAuditRequest, sovrynAuditRequestForAll } from '../services/sovrynAudit';
 import { onVitalizedTriggerChainHandshake } from '../services/chainHandshake';
 import { getBalance } from '../blockchain/sovrynProvider';
 import { getArchitectFromCitizens } from '../services/sovrynAudit';
@@ -57,6 +57,40 @@ router.post('/audit', async (_req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: 'Internal error during SOVRYN audit request',
+    });
+  }
+});
+
+/**
+ * POST /v1/sovryn/audit-all
+ * Manual Audit (all): scan citizens where is_vitalized=true and minting_status=null,
+ * trigger 11 VIDA minting for each, update minting_status=COMPLETED.
+ */
+router.post('/audit-all', async (_req: Request, res: Response) => {
+  try {
+    const result = await sovrynAuditRequestForAll();
+    const ok = result.success && result.failed === 0;
+    res.status(ok ? 200 : 207).json({
+      success: result.success,
+      message:
+        result.processed === 0
+          ? 'No citizens with is_vitalized=true and minting_status=null'
+          : `Processed ${result.processed}: ${result.succeeded} minted, ${result.failed} failed.`,
+      processed: result.processed,
+      succeeded: result.succeeded,
+      failed: result.failed,
+      results: result.results,
+      error: result.error,
+    });
+  } catch (error) {
+    console.error('SOVRYN audit-all route error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal error during SOVRYN audit-all',
+      processed: 0,
+      succeeded: 0,
+      failed: 0,
+      results: [],
     });
   }
 });
