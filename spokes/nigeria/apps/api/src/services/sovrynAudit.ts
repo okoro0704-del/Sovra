@@ -62,14 +62,34 @@ export async function getArchitectFromCitizens(): Promise<{
 }
 
 /**
+ * Handshake: ensure PFF_GLOBAL_FOUNDATION entity is active before sending 1 VIDA.
+ */
+export async function isFoundationEntityActive(): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('registered_entities')
+    .select('id, status')
+    .eq('name', 'PFF_GLOBAL_FOUNDATION')
+    .maybeSingle();
+  if (error || !data) return false;
+  const status = (data as { status?: string }).status;
+  return status === 'active' || status == null;
+}
+
+/**
  * Release 11 VIDA: 5 to Architect, 5 to National Block (by country_code), 1 to Global Foundation.
  * Uses national_reserves.country_code for the 5 VIDA; Foundation always from getGlobalFoundationAddress().
+ * Checks that PFF_GLOBAL_FOUNDATION entity is active before proceeding.
  */
 export async function releaseVidaCap(
   citizenUid: string,
   architectVaultAddress: string,
   countryCode: string
 ): Promise<ReleaseVidaCapResult> {
+  const foundationActive = await isFoundationEntityActive();
+  if (!foundationActive) {
+    return { success: false, error: 'Foundation entity (PFF_GLOBAL_FOUNDATION) is not active; cannot send 1 VIDA' };
+  }
+
   const nationalBlockAddress = await getNationalBlockAddress(supabase, countryCode);
   const foundationAddress = getGlobalFoundationAddress();
 
