@@ -1,7 +1,4 @@
 [build]
   base = "spokes/nigeria/apps/admin-dashboard"
   command = "npm run build"
-  publish = "."
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+  publish = "out"
