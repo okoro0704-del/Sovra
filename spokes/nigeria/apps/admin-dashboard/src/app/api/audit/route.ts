@@ -1,6 +1,4 @@
-// Netlify optimization: prevent caching of audit results
-export const dynamic = 'force-dynamic';
-
+// With output: 'export', API routes are not deployed; Manual Audit uses NEXT_PUBLIC_API_URL directly.
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-sovryn-key',
