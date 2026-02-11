@@ -7,7 +7,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { sovrynAuditRequest, sovrynAuditRequestForAll } from '../services/sovrynAudit';
+import { sovrynAuditRequest, sovrynAuditRequestForAll, sovrynAuditRequestForCitizen } from '../services/sovrynAudit';
 import { onVitalizedTriggerChainHandshake } from '../services/chainHandshake';
 import { getBalance } from '../blockchain/sovrynProvider';
 import { getArchitectFromCitizens } from '../services/sovrynAudit';
@@ -17,13 +17,42 @@ const router = Router();
 
 /**
  * POST /v1/sovryn/audit
- * Manual Audit: triggers sovrynAuditRequest() directly.
- * Use when automatic hook failed. Requires X-API-KEY.
+ * Webhook (Supabase): reads citizen_hash from body, confirms citizen, mints 11 VIDA (5 User, 5 Nation, 1 Foundation), sets minting_status = COMPLETED.
+ * Manual fallback: if no body, runs Architect-only sovrynAuditRequest().
+ * Returns clear error + code (e.g. MINTING_FAILED) so PFF can show "Minting Retrying...".
  */
-router.post('/audit', async (_req: Request, res: Response) => {
+router.post('/audit', async (req: Request, res: Response) => {
   try {
-    const result = await sovrynAuditRequest();
+    const body = (req.body && typeof req.body === 'object') ? req.body : {};
+    const citizenHash = body.citizen_hash ?? body.citizenHash ?? '';
+    const citizenUid = body.citizen_uid ?? body.citizen_uid ?? body.uid ?? '';
 
+    if (citizenHash || citizenUid) {
+      const result = await sovrynAuditRequestForCitizen(citizenHash || undefined, citizenUid || undefined);
+      if (result.success) {
+        res.status(200).json({
+          success: true,
+          message: '11 VIDA minted. 5 User, 5 Nation, 1 Foundation. minting_status = COMPLETED.',
+          citizenUid: result.citizenUid,
+          releaseId: result.releaseId,
+          transactionHash: result.transactionHash,
+          mintingStatus: result.mintingStatus,
+          redirect_url: process.env.AUTH_REDIRECT || undefined,
+        });
+        return;
+      }
+      const status = result.code === 'CITIZEN_NOT_FOUND' ? 404 : result.code === 'CONDITIONS_NOT_MET' ? 400 : 500;
+      res.status(status).json({
+        success: false,
+        message: result.error,
+        code: result.code,
+        citizenUid: result.citizenUid,
+        mintingStatus: result.mintingStatus,
+      });
+      return;
+    }
+
+    const result = await sovrynAuditRequest();
     if (!result.success && !result.assumedControl) {
       res.status(400).json({
         success: false,
@@ -32,7 +61,6 @@ router.post('/audit', async (_req: Request, res: Response) => {
       });
       return;
     }
-
     if (result.success && result.assumedControl) {
       res.status(200).json({
         success: true,
@@ -45,11 +73,10 @@ router.post('/audit', async (_req: Request, res: Response) => {
       });
       return;
     }
-
     res.status(200).json({
       success: true,
       assumedControl: false,
-      message: result.error || 'Conditions not met for release (already completed or not vitalized)',
+      message: result.error || 'Conditions not met for release',
       architectUid: result.architectUid,
       mintingStatus: result.mintingStatus,
       redirect_url: process.env.AUTH_REDIRECT || undefined,
@@ -59,6 +86,7 @@ router.post('/audit', async (_req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: 'Internal error during SOVRYN audit request',
+      code: 'MINTING_FAILED',
     });
   }
 });
@@ -88,6 +116,7 @@ router.post('/audit-all', async (req: Request, res: Response) => {
       failed: result.failed,
       results: result.results,
       error: result.error,
+      code: result.failed > 0 ? 'MINTING_FAILED' : undefined,
       redirect_url: process.env.AUTH_REDIRECT || undefined,
     });
   } catch (error) {
@@ -95,6 +124,7 @@ router.post('/audit-all', async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: 'Internal error during SOVRYN audit-all',
+      code: 'MINTING_FAILED',
       processed: 0,
       succeeded: 0,
       failed: 0,

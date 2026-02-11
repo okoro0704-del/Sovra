@@ -203,6 +203,54 @@ export async function sovrynAuditRequest(): Promise<SovrynAuditResult> {
   };
 }
 
+/**
+ * Get citizen by citizen_hash (from Supabase webhook) or citizen_uid.
+ * Tries: 1) citizens.uid = citizen_uid or citizen_hash, 2) sovereign_identity.face_hash = citizen_hash then citizen by sovereign_identity_id.
+ */
+export async function getCitizenByHashOrUid(citizenHash?: string, citizenUid?: string): Promise<{
+  success: boolean;
+  citizen?: VitalizedCitizenRow & { id: string };
+  error?: string;
+}> {
+  const uid = (citizenUid ?? citizenHash ?? '').trim();
+  const hashForFace = (citizenHash ?? '').trim();
+
+  if (!uid && !hashForFace) {
+    return { success: false, error: 'Missing citizen_hash or citizen_uid in request body' };
+  }
+
+  if (uid) {
+    const { data: byUid, error: e1 } = await supabase
+      .from('citizens')
+      .select('id, uid, vault_address, is_vitalized, minting_status')
+      .eq('uid', uid)
+      .maybeSingle();
+    if (!e1 && byUid) {
+      return { success: true, citizen: byUid as VitalizedCitizenRow & { id: string } };
+    }
+  }
+
+  if (hashForFace) {
+    const { data: si, error: e2 } = await supabase
+      .from('sovereign_identity')
+      .select('id')
+      .eq('face_hash', hashForFace)
+      .maybeSingle();
+    if (!e2 && si) {
+      const { data: civ, error: e3 } = await supabase
+        .from('citizens')
+        .select('id, uid, vault_address, is_vitalized, minting_status')
+        .eq('sovereign_identity_id', si.id)
+        .maybeSingle();
+      if (!e3 && civ) {
+        return { success: true, citizen: civ as VitalizedCitizenRow & { id: string } };
+      }
+    }
+  }
+
+  return { success: false, error: 'Citizen not found for given citizen_hash or citizen_uid' };
+}
+
 /** Citizen row for audit-all: is_vitalized true and minting_status null */
 export interface VitalizedCitizenRow {
   id: string;
@@ -311,5 +359,101 @@ export async function sovrynAuditRequestForAll(options?: {
     succeeded,
     failed,
     results,
+  };
+}
+
+/** Result for single-citizen audit (webhook / PFF bridge). */
+export interface SovrynAuditForCitizenResult {
+  success: boolean;
+  citizenUid?: string;
+  releaseId?: string;
+  transactionHash?: string;
+  mintingStatus?: string;
+  error?: string;
+  /** Set when mint failed so PFF can show "Minting Retrying..." */
+  code?: 'CITIZEN_NOT_FOUND' | 'CONDITIONS_NOT_MET' | 'MINTING_FAILED' | 'STATUS_UPDATE_FAILED';
+}
+
+/**
+ * SOVRYN audit for one citizen (webhook from Supabase with citizen_hash).
+ * 1. Resolve citizen by citizen_hash or citizen_uid.
+ * 2. Confirm citizen exists, is_vitalized and minting_status is null.
+ * 3. Call releaseVidaCap (11 VIDA: 5 User, 5 Nation, 1 Foundation).
+ * 4. On success update citizens.minting_status = 'COMPLETED'.
+ * Returns clear error + code so PFF can show "Minting Retrying..." on failure.
+ */
+export async function sovrynAuditRequestForCitizen(citizenHash?: string, citizenUid?: string): Promise<SovrynAuditForCitizenResult> {
+  const lookup = await getCitizenByHashOrUid(citizenHash, citizenUid);
+  if (!lookup.success || !lookup.citizen) {
+    return {
+      success: false,
+      error: lookup.error || 'Citizen not found',
+      code: 'CITIZEN_NOT_FOUND',
+    };
+  }
+
+  const citizen = lookup.citizen;
+  const shouldMint =
+    citizen.is_vitalized === true &&
+    (citizen.minting_status === null || citizen.minting_status === '');
+
+  if (!shouldMint) {
+    return {
+      success: false,
+      citizenUid: citizen.uid,
+      mintingStatus: citizen.minting_status ?? undefined,
+      error:
+        citizen.minting_status != null
+          ? `Minting already in state: ${citizen.minting_status}`
+          : 'Citizen is not vitalized (is_vitalized must be true)',
+      code: 'CONDITIONS_NOT_MET',
+    };
+  }
+
+  const vaultAddress =
+    citizen.vault_address ||
+    process.env.ARCHITECT_VAULT_ADDRESS ||
+    citizen.uid;
+
+  const countryCode = await getCitizenNationality(supabase, citizen.uid, {
+    defaultCountryCode: process.env.SPOKE_COUNTRY_CODE || 'NG',
+  });
+  const releaseResult = await releaseVidaCap(citizen.uid, vaultAddress, countryCode);
+
+  if (!releaseResult.success) {
+    return {
+      success: false,
+      citizenUid: citizen.uid,
+      error: releaseResult.error || 'Chain or ledger mint failed',
+      code: 'MINTING_FAILED',
+    };
+  }
+
+  const { error: updateError } = await supabase
+    .from('citizens')
+    .update({
+      minting_status: 'COMPLETED',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('uid', citizen.uid);
+
+  if (updateError) {
+    return {
+      success: false,
+      citizenUid: citizen.uid,
+      releaseId: releaseResult.releaseId,
+      transactionHash: releaseResult.transactionHash,
+      mintingStatus: 'COMPLETED',
+      error: `Mint succeeded but status update failed: ${updateError.message}`,
+      code: 'STATUS_UPDATE_FAILED',
+    };
+  }
+
+  return {
+    success: true,
+    citizenUid: citizen.uid,
+    releaseId: releaseResult.releaseId,
+    transactionHash: releaseResult.transactionHash,
+    mintingStatus: 'COMPLETED',
   };
 }

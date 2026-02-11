@@ -116,6 +116,51 @@
   border: 1px solid var(--success);
 }
 
+.retryBanner {
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--error);
+  margin-bottom: 1rem;
+  padding: 0.6rem 1rem;
+  background: var(--error-bg, rgba(185, 28, 28, 0.1));
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--error);
+}
+
+.balanceCard {
+  background: var(--bg-card);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.balanceLabel {
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.balanceValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.balanceHint {
+  width: 100%;
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+  margin: 0.25rem 0 0;
+}
+
 /* Command section */
 .commandSection {
   background: var(--command-bg);

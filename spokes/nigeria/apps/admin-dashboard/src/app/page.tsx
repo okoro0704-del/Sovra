@@ -27,6 +27,8 @@ export default function Home() {
   const [registryOpen, setRegistryOpen] = useState(false);
   const [registryItems, setRegistryItems] = useState<RegistryItem[]>([]);
   const [registryLoading, setRegistryLoading] = useState(false);
+  const [userBalance, setUserBalance] = useState<number>(0);
+  const [mintingRetrying, setMintingRetrying] = useState(false);
 
   const fetchStats = useCallback(async () => {
     if (!API_URL || !API_KEY) return;
@@ -62,7 +64,17 @@ export default function Home() {
     };
 
     channels.push(
-      supabase.channel('citizens').on('postgres_changes', { event: '*', schema: 'public', table: 'citizens' }, refetch)
+      supabase.channel('citizens').on('postgres_changes', { event: '*', schema: 'public', table: 'citizens' }, (payload) => {
+        refetch();
+        const n = (payload as { new?: { minting_status?: string } }).new;
+        if (n?.minting_status === 'COMPLETED') {
+          setUserBalance(0.9);
+          setMintingRetrying(false);
+          import('canvas-confetti').then(({ default: confetti }) => {
+            confetti({ particleCount: 120, spread: 70, origin: { y: 0.7 } });
+          });
+        }
+      })
     );
     channels.push(
       supabase.channel('entities').on('postgres_changes', { event: '*', schema: 'public', table: 'registered_entities' }, refetch)
@@ -95,6 +107,7 @@ export default function Home() {
     }
     setAuditLoading(true);
     setAuditResult(null);
+    setMintingRetrying(false);
     try {
       const res = await fetch(`${API_URL}/v1/sovryn/audit-all`, {
         method: 'POST',
@@ -104,6 +117,7 @@ export default function Home() {
         },
       });
       const data = await res.json().catch(() => ({}));
+      const isMintFailure = data.code === 'MINTING_FAILED' || (data.failed ?? 0) > 0;
       if (res.ok && data.success !== undefined) {
         const processed = data.processed ?? 0;
         const succeeded = data.succeeded ?? 0;
@@ -113,7 +127,8 @@ export default function Home() {
         } else if (failed === 0) {
           showToast(`Success: ${succeeded} citizen(s) minted (11 VIDA each).`, true);
         } else {
-          showToast(`${succeeded} minted, ${failed} failed. ${data.message || ''}`, false);
+          setMintingRetrying(true);
+          showToast('Minting Retrying…', false);
         }
         setAuditResult({
           ok: failed === 0,
@@ -126,14 +141,19 @@ export default function Home() {
           },
         });
       } else {
-        const msg = data.message || data.error || `Request failed (${res.status})`;
-        showToast(msg, false);
-        setAuditResult({ ok: false, message: msg, detail: data });
+        if (isMintFailure) {
+          setMintingRetrying(true);
+          showToast('Minting Retrying…', false);
+        } else {
+          const msg = data.message || data.error || `Request failed (${res.status})`;
+          showToast(msg, false);
+        }
+        setAuditResult({ ok: false, message: data.message || data.error, detail: data });
       }
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Network error';
-      showToast(msg, false);
-      setAuditResult({ ok: false, message: msg });
+      setMintingRetrying(true);
+      showToast('Minting Retrying…', false);
+      setAuditResult({ ok: false, message: e instanceof Error ? e.message : 'Network error' });
     } finally {
       setAuditLoading(false);
     }
@@ -176,6 +196,12 @@ export default function Home() {
           <p className={styles.subtitle}>Decentralized Identity & Consent Oversight</p>
         </header>
 
+        {mintingRetrying && (
+          <div className={styles.retryBanner} role="status">
+            Minting Retrying…
+          </div>
+        )}
+
         <div className={styles.statsGrid}>
           <div className={styles.statCard}>
             <h2 className={styles.statNumber}>{stats.citizens.toLocaleString()}</h2>
@@ -189,6 +215,12 @@ export default function Home() {
             <h2 className={styles.statNumber}>{stats.consents.toLocaleString()}</h2>
             <p className={styles.statLabel}>Consent Logs</p>
           </div>
+        </div>
+
+        <div className={styles.balanceCard}>
+          <span className={styles.balanceLabel}>User balance (VIDA)</span>
+          <span className={styles.balanceValue}>{userBalance > 0 ? userBalance.toFixed(1) : '0'} VIDA</span>
+          <p className={styles.balanceHint}>Updates to 0.9 VIDA when minting_status = COMPLETED (Realtime)</p>
         </div>
 
         {(!API_URL || !API_KEY) && (
